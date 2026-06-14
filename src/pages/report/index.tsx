@@ -5,6 +5,8 @@ import classNames from 'classnames';
 import styles from './index.module.scss';
 import { useReportStore } from '@/store/useReportStore';
 import { useFamilyStore } from '@/store/useFamilyStore';
+import { useNoticeStore } from '@/store/useNoticeStore';
+import { useTaskStore } from '@/store/useTaskStore';
 import { formatDateTime, formatDate } from '@/utils/date';
 import { DailyReport, TaskBrief } from '@/types/report';
 import EmptyState from '@/components/EmptyState';
@@ -47,6 +49,8 @@ const ReportPage: React.FC = () => {
   const reports = useReportStore((state) => state.reports);
   const { generateDailyReport, getReportByDate } = useReportStore();
   const { isCurrentUserAdmin, getMemberById } = useFamilyStore();
+  const { checkExpiredNotices } = useNoticeStore();
+  const { checkOverdueTasks } = useTaskStore();
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
@@ -58,7 +62,9 @@ const ReportPage: React.FC = () => {
   }, []);
 
   useDidShow(() => {
-    console.log('[Report] 页面显示，重新生成简报');
+    console.log('[Report] 页面显示，刷新状态并重新生成简报');
+    checkExpiredNotices();
+    checkOverdueTasks();
     generateDailyReport();
   });
 
@@ -81,11 +87,26 @@ const ReportPage: React.FC = () => {
 
   const currentReport: DailyReport | null = useMemo(() => {
     if (selectedDate) {
-      const byDate = getReportByDate(selectedDate);
-      if (byDate) return byDate;
+      return getReportByDate(selectedDate) || null;
     }
-    return reports.length > 0 ? reports[0] : null;
+    return null;
   }, [selectedDate, reports, getReportByDate]);
+
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date);
+    const existing = getReportByDate(date);
+    if (!existing) {
+      Taro.showModal({
+        title: `查看 ${date} 简报`,
+        content: `${date} 还没有生成过简报，是否基于当前数据生成一份？\n（注意：历史数据为回溯快照）`,
+        success: (r) => {
+          if (r.confirm) {
+            generateDailyReport(date);
+          }
+        },
+      });
+    }
+  };
 
   const weekDays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
   const weekData = reports.slice(0, 7).reverse();
@@ -117,10 +138,14 @@ const ReportPage: React.FC = () => {
     <ScrollView className={styles.page} scrollY>
       <View className={styles.header}>
         <Text className={styles.reportTitle}>📊 每日简报</Text>
-        <Text className={styles.reportDate}>{currentReport.date}</Text>
-        <Text className={styles.generateTime}>
-          生成时间: {formatDateTime(currentReport.createdAt)}
+        <Text className={styles.reportDate}>
+          {currentReport ? currentReport.date : selectedDate || '请选择日期'}
         </Text>
+        {currentReport && (
+          <Text className={styles.generateTime}>
+            生成时间: {formatDateTime(currentReport.createdAt)}
+          </Text>
+        )}
       </View>
 
       <View className={styles.dateSelector}>
@@ -132,22 +157,42 @@ const ReportPage: React.FC = () => {
                 key={date}
                 className={classNames(styles.dateTab, {
                   [styles.active]: selectedDate === date,
+                  [styles.hasData]: reportExist,
+                  [styles.noData]: !reportExist,
                 })}
-                onClick={() => {
-                  setSelectedDate(date);
-                  if (!reportExist) {
-                    generateDailyReport();
-                  }
-                }}
+                onClick={() => handleDateSelect(date)}
               >
-                {date.slice(5)} {reportExist ? '' : '(无)'}
+                {date.slice(5)}
+                {reportExist ? '' : ' · 无'}
               </View>
             );
           })}
         </View>
       </View>
 
-      <View className={styles.summarySection}>
+      {!currentReport && selectedDate && (
+        <View className={styles.noReportWrap}>
+          <EmptyState
+            title={`${selectedDate} 暂无简报`}
+            description="该日期还没有生成过简报，可点击下方按钮基于当前数据生成一份（历史快照）"
+            actionText="立即生成简报"
+            onAction={() => generateDailyReport(selectedDate)}
+          />
+        </View>
+      )}
+
+      {!currentReport && !selectedDate && (
+        <View style={{ padding: '200rpx' }}>
+          <EmptyState
+            title="请选择日期查看简报"
+            description="每日凌晨将自动生成当日简报，也可手动选择日期生成"
+          />
+        </View>
+      )}
+
+      {currentReport && (
+        <>
+          <View className={styles.summarySection}>
         <View className={styles.summaryGrid}>
           <View className={styles.summaryCard}>
             <Text className={classNames(styles.summaryValue, styles.primaryColor)}>
@@ -328,7 +373,7 @@ const ReportPage: React.FC = () => {
         </View>
       )}
 
-      {reports.length > 0 && (
+      {currentReport && reports.length > 0 && (
         <View className={styles.historySection}>
           <Text className={styles.historyTitle}>历史简报列表</Text>
           <View className={styles.historyList}>
@@ -338,7 +383,7 @@ const ReportPage: React.FC = () => {
                 className={classNames(styles.historyItem, {
                   [styles.active]: selectedDate === item.date,
                 })}
-                onClick={() => setSelectedDate(item.date)}
+                onClick={() => handleDateSelect(item.date)}
               >
                 <Text className={styles.historyDate}>
                   {item.date}
@@ -352,6 +397,8 @@ const ReportPage: React.FC = () => {
             ))}
           </View>
         </View>
+      )}
+        </>
       )}
     </ScrollView>
   );

@@ -13,7 +13,7 @@ interface ReportState {
   getReports: () => DailyReport[];
   getLatestReport: () => DailyReport | undefined;
   getReportByDate: (date: string) => DailyReport | undefined;
-  generateDailyReport: () => DailyReport;
+  generateDailyReport: (dateStr?: string) => DailyReport;
   getWeeklyAverage: () => {
     avgTaskCompletionRate: number;
     avgNoticeReadRate: number;
@@ -36,13 +36,15 @@ export const useReportStore = create<ReportState>((set, get) => ({
     return get().reports.find((r) => r.date === date);
   },
 
-  generateDailyReport: () => {
+  generateDailyReport: (dateStr) => {
     const taskStore = useTaskStore.getState();
     const noticeStore = useNoticeStore.getState();
     const shoppingStore = useShoppingStore.getState();
     const { family, currentUser } = useFamilyStore.getState();
 
-    const todayStr = formatDate(new Date());
+    const targetDateStr = dateStr || formatDate(new Date());
+    const targetDate = new Date(targetDateStr + 'T00:00:00');
+    const targetDateEnd = new Date(targetDateStr + 'T23:59:59');
 
     const taskStats = taskStore.getTaskStats();
     const taskCompletionRate =
@@ -53,7 +55,8 @@ export const useReportStore = create<ReportState>((set, get) => ({
     const newTasks = taskStore.tasks
       .filter((t) => {
         if (!t.createdAt) return false;
-        return formatDate(new Date(t.createdAt)) === todayStr;
+        const cd = new Date(t.createdAt);
+        return cd >= targetDate && cd <= targetDateEnd;
       })
       .map<TaskBrief>((t) => ({
         id: t.id,
@@ -66,7 +69,8 @@ export const useReportStore = create<ReportState>((set, get) => ({
     const doneTasks = taskStore.tasks
       .filter((t) => {
         if (!t.completedAt) return false;
-        return formatDate(new Date(t.completedAt)) === todayStr;
+        const cd = new Date(t.completedAt);
+        return cd >= targetDate && cd <= targetDateEnd;
       })
       .map<TaskBrief>((t) => ({
         id: t.id,
@@ -77,7 +81,11 @@ export const useReportStore = create<ReportState>((set, get) => ({
       }));
 
     const overdueTaskList = taskStore.tasks
-      .filter((t) => t.status === 'overdue')
+      .filter((t) => {
+        if (t.status !== 'overdue') return false;
+        const dl = new Date(t.deadline);
+        return dl <= targetDateEnd;
+      })
       .map<TaskBrief>((t) => ({
         id: t.id,
         title: t.title,
@@ -99,36 +107,40 @@ export const useReportStore = create<ReportState>((set, get) => ({
     const shoppingCompletionRate = shoppingStore.getCompletionRate();
 
     const memberContributions = family.members.map((member) => {
-      const memberTasks = taskStore.tasks.filter(
-        (t) => t.assigneeId === member.id && t.status === 'done'
-      );
-      const completedToday = memberTasks.filter((t) => {
+      const memberDoneTasksOnTargetDay = taskStore.tasks.filter((t) => {
+        if (t.assigneeId !== member.id || t.status !== 'done') return false;
         if (!t.completedAt) return false;
-        return formatDate(new Date(t.completedAt)) === todayStr;
-      }).length;
+        const cd = new Date(t.completedAt);
+        return cd >= targetDate && cd <= targetDateEnd;
+      });
 
-      const ratingsForMember = memberTasks
-        .flatMap((t) => t.ratings)
-        .filter((r, index, arr) => {
-          const firstIdx = arr.findIndex(
-            (x) => x.fromUserId === r.fromUserId
-          );
-          return firstIdx === index;
+      let earnedScore = 0;
+      memberDoneTasksOnTargetDay.forEach((task) => {
+        task.ratings.forEach((rating) => {
+          earnedScore += rating.score;
         });
-      const earnedScore = ratingsForMember.reduce((sum, r) => sum + r.score, 0);
+      });
 
       const addedItems = shoppingStore.items.filter(
-        (i) => i.addedById === member.id
+        (i) => {
+          if (!i.createdAt) return i.addedById === member.id;
+          const cd = new Date(i.createdAt);
+          return i.addedById === member.id && cd >= targetDate && cd <= targetDateEnd;
+        }
       ).length;
       const checkedItems = shoppingStore.items.filter(
-        (i) => i.checkedById === member.id
+        (i) => {
+          if (!i.checkedAt) return i.checkedById === member.id;
+          const cd = new Date(i.checkedAt);
+          return i.checkedById === member.id && cd >= targetDate && cd <= targetDateEnd;
+        }
       ).length;
 
       return {
         memberId: member.id,
         memberName: member.name,
         avatar: member.avatar,
-        completedTasks: completedToday,
+        completedTasks: memberDoneTasksOnTargetDay.length,
         earnedScore: Math.round(earnedScore),
         addedShoppingItems: addedItems,
         checkedShoppingItems: checkedItems,
@@ -136,12 +148,12 @@ export const useReportStore = create<ReportState>((set, get) => ({
     });
 
     const newReport: DailyReport = {
-      id: `report_${Date.now()}`,
-      date: todayStr,
+      id: `report_${targetDateStr}_${Date.now()}`,
+      date: targetDateStr,
       taskCompletionRate,
       totalTasks: taskStats.total,
       completedTasks: taskStats.done,
-      overdueTasks: taskStats.overdue,
+      overdueTasks: overdueTaskList.length,
       newTasks,
       doneTasks,
       overdueTaskList,
@@ -157,7 +169,9 @@ export const useReportStore = create<ReportState>((set, get) => ({
 
     set((state) => {
       const filtered = state.reports.filter((r) => r.date !== newReport.date);
-      return { reports: [newReport, ...filtered] };
+      const newArr = [newReport, ...filtered];
+      newArr.sort((a, b) => (a.date < b.date ? 1 : -1));
+      return { reports: newArr };
     });
 
     console.log('[Report] 每日简报生成完成', {

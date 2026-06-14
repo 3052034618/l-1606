@@ -108,6 +108,9 @@ const FamilyManagePage: React.FC = () => {
       content: family.name,
       success: (res) => {
         if (res.confirm && res.content && res.content.trim()) {
+          const newName = res.content.trim();
+          const { setFamily } = useFamilyStore.getState();
+          setFamily({ ...family, name: newName });
           Taro.showToast({ title: '修改成功', icon: 'success' });
         }
       },

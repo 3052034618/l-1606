@@ -337,12 +337,27 @@
   color: $color-text-secondary;
   white-space: nowrap;
   transition: all $transition-fast;
+  opacity: 0.6;
 
   &.active {
     background: $gradient-primary;
     color: $color-text-white;
     font-weight: $font-weight-medium;
+    opacity: 1;
   }
+
+  &.hasData {
+    opacity: 1;
+    color: $color-text-primary;
+  }
+
+  &.noData {
+    opacity: 0.45;
+  }
+}
+
+.noReportWrap {
+  margin: $spacing-xxl $spacing-md 0;
 }
 
 .taskListSection {

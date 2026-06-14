@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, Button, ScrollView } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
@@ -11,40 +11,79 @@ import { useReportStore } from '@/store/useReportStore';
 import TaskCard from '@/components/TaskCard';
 import NoticeCard from '@/components/NoticeCard';
 import EmptyState from '@/components/EmptyState';
-import { formatDate } from '@/utils/date';
+import { formatDate, getTodayDate } from '@/utils/date';
 import { CALENDAR_EVENT_TYPE_OPTIONS } from '@/types/calendar';
 
 const HomePage: React.FC = () => {
   const { currentUser, family, isCurrentUserAdmin } = useFamilyStore();
-  const { getTasks, getTodayTasksCount, getOverdueTasksCount, claimTask, completeTask, checkOverdueTasks } = useTaskStore();
-  const { getNotices, getUnreadCount } = useNoticeStore();
+  const { claimTask, completeTask, checkOverdueTasks } = useTaskStore();
+  const { checkExpiredNotices, getUnreadCount } = useNoticeStore();
   const { getCompletionRate: getShoppingCompletionRate } = useShoppingStore();
-  const { getUpcomingEvents, checkReminders } = useCalendarStore();
-  const { getLatestReport } = useReportStore();
+  const { checkReminders } = useCalendarStore();
+
+  const tasks = useTaskStore((state) => state.tasks);
+  const notices = useNoticeStore((state) => state.notices);
+  const events = useCalendarStore((state) => state.events);
+  const reports = useReportStore((state) => state.reports);
 
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     checkOverdueTasks();
+    checkExpiredNotices();
     checkReminders();
   }, []);
 
   useDidShow(() => {
     checkOverdueTasks();
+    checkExpiredNotices();
     checkReminders();
   });
 
-  const todayTasks = getTasks().filter(
-    (t) => t.status === 'todo' || t.status === 'doing'
-  ).slice(0, 3);
+  const todayTasks = useMemo(
+    () =>
+      tasks
+        .filter((t) => t.status === 'todo' || t.status === 'doing')
+        .slice(0, 3),
+    [tasks]
+  );
 
-  const notices = getNotices().slice(0, 2);
-  const upcomingEvents = getUpcomingEvents(7).slice(0, 3);
-  const latestReport = getLatestReport();
+  const activeNotices = useMemo(
+    () => notices.filter((n) => !n.isExpired).slice(0, 2),
+    [notices]
+  );
+
+  const today = getTodayDate();
+  const upcomingEvents = useMemo(() => {
+    const future = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const futureEnd = new Date(future.getFullYear(), future.getMonth(), future.getDate(), 23, 59, 59);
+    return events
+      .filter((event) => {
+        const eventDate = new Date(event.date);
+        return eventDate >= todayStart && eventDate <= futureEnd;
+      })
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 3);
+  }, [events, today]);
+
+  const latestReport = useMemo(
+    () => (reports.length > 0 ? reports[0] : null),
+    [reports]
+  );
+
+  const taskStats = useMemo(() => {
+    const total = tasks.length;
+    const done = tasks.filter((t) => t.status === 'done').length;
+    const todo = tasks.filter((t) => t.status === 'todo').length;
+    const doing = tasks.filter((t) => t.status === 'doing').length;
+    const overdue = tasks.filter((t) => t.status === 'overdue').length;
+    return { total, done, todo, doing, overdue };
+  }, [tasks]);
 
   const unreadCount = getUnreadCount(currentUser.id);
-  const todayCount = getTodayTasksCount();
-  const overdueCount = getOverdueTasksCount();
+  const todayCount = taskStats.todo + taskStats.doing;
+  const overdueCount = taskStats.overdue;
   const shoppingRate = getShoppingCompletionRate();
 
   const getGreeting = () => {
@@ -291,8 +330,8 @@ const HomePage: React.FC = () => {
             </Text>
           </View>
           <View className={styles.listContainer}>
-            {notices.length > 0 ? (
-              notices.map((notice) => <NoticeCard key={notice.id} notice={notice} />)
+            {activeNotices.length > 0 ? (
+              activeNotices.map((notice) => <NoticeCard key={notice.id} notice={notice} />)
             ) : (
               <EmptyState title="暂无公告" description="家庭一切安好~" />
             )}
