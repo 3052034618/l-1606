@@ -296,3 +296,193 @@
   display: block;
   margin-top: 4rpx;
 }
+
+.emptyUpcoming {
+  padding: $spacing-lg;
+  text-align: center;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+}
+
+.upcomingType {
+  display: inline-block;
+  padding: 2rpx 12rpx;
+  border-radius: $radius-round;
+  font-size: 20rpx;
+  margin-bottom: $spacing-xs;
+  background: $gradient-primary;
+  color: $color-text-white;
+}
+
+.type_birthday {
+  background: linear-gradient(135deg, #FF6B9D 0%, #FF4785 100%);
+  color: white;
+}
+
+.type_meeting {
+  background: linear-gradient(135deg, #667EEA 0%, #4D34A8 100%);
+  color: white;
+}
+
+.type_reminder {
+  background: linear-gradient(135deg, #F093FB 0%, #F5576C 100%);
+  color: white;
+}
+
+.type_other {
+  background: rgba(130, 130, 130, 0.2);
+  color: #555;
+}
+
+.dot_birthday {
+  background: #FF6B9D;
+}
+
+.dot_meeting {
+  background: #667EEA;
+}
+
+.dot_reminder {
+  background: #F5576C;
+}
+
+.dot_other {
+  background: #888;
+}
+
+.tag_birthday {
+  background: rgba(255, 107, 157, 0.1);
+  color: #FF4785;
+}
+
+.tag_meeting {
+  background: rgba(102, 126, 234, 0.1);
+  color: #4D34A8;
+}
+
+.tag_reminder {
+  background: rgba(245, 87, 108, 0.1);
+  color: #F5576C;
+}
+
+.tag_other {
+  background: rgba(130, 130, 130, 0.1);
+  color: #555;
+}
+
+.modalMask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modalBox {
+  width: 85%;
+  max-height: 80vh;
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  overflow-y: auto;
+}
+
+.modalTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  display: block;
+  margin-bottom: $spacing-lg;
+  text-align: center;
+}
+
+.formRow {
+  margin-bottom: $spacing-lg;
+}
+
+.formLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  display: block;
+  margin-bottom: $spacing-sm;
+  font-weight: $font-weight-medium;
+}
+
+.formInput {
+  width: 100%;
+  padding: $spacing-md $spacing-lg;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  border: 2rpx solid transparent;
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: $color-primary;
+  }
+}
+
+.formValue {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  padding: $spacing-md $spacing-lg;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  display: block;
+}
+
+.typeSelect {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.typeOption {
+  padding: $spacing-sm $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  transition: all $transition-fast;
+
+  &.typeActive {
+    background: $gradient-primary;
+    color: $color-text-white;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.modalActions {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-xl;
+}
+
+.modalCancel {
+  flex: 1;
+  padding: $spacing-md;
+  background: $color-bg-page;
+  color: $color-text-secondary;
+  font-size: $font-size-md;
+  border-radius: $radius-md;
+  border: none;
+}
+
+.modalConfirm {
+  flex: 1;
+  padding: $spacing-md;
+  background: $gradient-primary;
+  color: $color-text-white;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  border-radius: $radius-md;
+  border: none;
+}

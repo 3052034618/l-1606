@@ -33,13 +33,17 @@ const NoticeCard: React.FC<NoticeCardProps> = ({ notice, onClick }) => {
     <View
       className={classNames(styles.noticeCard, 'card', 'clickable', {
         [styles.unread]: isUnread,
+        [styles.expired]: notice.isExpired,
       })}
       onClick={handleClick}
     >
       <View className={styles.cardHeader}>
         <View className={styles.titleRow}>
-          {isUnread && <View className={styles.unreadDot} />}
-          <Text className={classNames(styles.title, { [styles.unreadText]: isUnread })}>
+          {isUnread && !notice.isExpired && <View className={styles.unreadDot} />}
+          {notice.isExpired && (
+            <View className={styles.expiredTag}>已过期</View>
+          )}
+          <Text className={classNames(styles.title, { [styles.unreadText]: isUnread && !notice.isExpired })}>
             {notice.title}
           </Text>
         </View>
@@ -54,20 +58,29 @@ const NoticeCard: React.FC<NoticeCardProps> = ({ notice, onClick }) => {
         <View className={styles.metaRow}>
           <Text className={styles.meta}>发布者：{notice.creatorName}</Text>
           <Text className={styles.meta}>
-            自动消失：{formatDate(notice.autoExpireAt)}
+            {notice.isExpired ? '已到期：' : '自动消失：'}{formatDate(notice.autoExpireAt)}
           </Text>
         </View>
-        <View className={styles.readProgress}>
-          <View className={styles.progressBar}>
-            <View
-              className={styles.progressFill}
-              style={{ width: `${readProgress}%` }}
-            />
+        {!notice.isExpired && (
+          <View className={styles.readProgress}>
+            <View className={styles.progressBar}>
+              <View
+                className={styles.progressFill}
+                style={{ width: `${readProgress}%` }}
+              />
+            </View>
+            <Text className={styles.progressText}>
+              {notice.readCount}/{notice.totalMembers} 已读
+            </Text>
           </View>
-          <Text className={styles.progressText}>
-            {notice.readCount}/{notice.totalMembers} 已读
-          </Text>
-        </View>
+        )}
+        {notice.isExpired && (
+          <View className={styles.expiredInfo}>
+            <Text className={styles.expiredInfoText}>
+              共 {notice.readCount}/{notice.totalMembers} 人阅读 · 阅读率 {readProgress}%
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );

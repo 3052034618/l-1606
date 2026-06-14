@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, Button, ScrollView } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import classNames from 'classnames';
@@ -8,10 +8,11 @@ import { useFamilyStore } from '@/store/useFamilyStore';
 import NoticeCard from '@/components/NoticeCard';
 import EmptyState from '@/components/EmptyState';
 
-type FilterType = 'all' | 'unread' | 'read';
+type FilterType = 'all' | 'unread' | 'read' | 'expired';
 
 const NoticesPage: React.FC = () => {
-  const { getNotices, getUnreadCount, checkExpiredNotices } = useNoticeStore();
+  const notices = useNoticeStore((state) => state.notices);
+  const { checkExpiredNotices, getUnreadCount } = useNoticeStore();
   const { currentUser, isCurrentUserAdmin } = useFamilyStore();
 
   const [filter, setFilter] = useState<FilterType>('all');
@@ -25,16 +26,39 @@ const NoticesPage: React.FC = () => {
     checkExpiredNotices();
   });
 
-  const allNotices = getNotices();
+  const activeNotices = useMemo(
+    () => notices.filter((n) => !n.isExpired),
+    [notices]
+  );
+  const expiredNotices = useMemo(
+    () => notices.filter((n) => n.isExpired),
+    [notices]
+  );
   const unreadCount = getUnreadCount(currentUser.id);
-  const readCount = allNotices.length - unreadCount;
+  const activeReadCount = activeNotices.filter((n) =>
+    n.readBy.includes(currentUser.id)
+  ).length;
 
-  const filteredNotices = allNotices.filter((notice) => {
-    const isUnread = !notice.readBy.includes(currentUser.id);
-    if (filter === 'unread') return isUnread;
-    if (filter === 'read') return !isUnread;
-    return true;
-  });
+  const visibleList = useMemo(() => {
+    if (isCurrentUserAdmin()) {
+      if (filter === 'expired') return expiredNotices;
+      if (filter === 'unread') {
+        return activeNotices.filter((n) => !n.readBy.includes(currentUser.id));
+      }
+      if (filter === 'read') {
+        return activeNotices.filter((n) => n.readBy.includes(currentUser.id));
+      }
+      return activeNotices;
+    } else {
+      if (filter === 'unread') {
+        return activeNotices.filter((n) => !n.readBy.includes(currentUser.id));
+      }
+      if (filter === 'read') {
+        return activeNotices.filter((n) => n.readBy.includes(currentUser.id));
+      }
+      return activeNotices;
+    }
+  }, [notices, activeNotices, expiredNotices, filter, currentUser.id, isCurrentUserAdmin]);
 
   const handleRefresh = () => {
     setRefreshing(true);
@@ -54,6 +78,9 @@ const NoticesPage: React.FC = () => {
   };
 
   const getEmptyText = () => {
+    if (isCurrentUserAdmin() && filter === 'expired') {
+      return { title: '暂无已过期公告', description: '过期公告会自动移到这里' };
+    }
     switch (filter) {
       case 'unread':
         return { title: '没有未读公告', description: '所有公告都已阅读' };
@@ -66,6 +93,9 @@ const NoticesPage: React.FC = () => {
 
   const emptyText = getEmptyText();
 
+  const displayTotal = isCurrentUserAdmin() ? activeNotices.length + expiredNotices.length : activeNotices.length;
+  const displayActive = activeNotices.length;
+
   return (
     <View className={styles.page}>
       <ScrollView
@@ -77,7 +107,15 @@ const NoticesPage: React.FC = () => {
         <View className={styles.header}>
           <Text className={styles.title}>📢 家庭公告</Text>
           <Text className={styles.subtitle}>
-            共 {allNotices.length} 条公告，{unreadCount} 条未读
+            {isCurrentUserAdmin() ? (
+              <>
+                共 {displayTotal} 条（进行中 {displayActive} / 已过期 {expiredNotices.length}），{unreadCount} 条未读
+              </>
+            ) : (
+              <>
+                共 {displayActive} 条公告，{unreadCount} 条未读
+              </>
+            )}
           </Text>
         </View>
 
@@ -86,7 +124,7 @@ const NoticesPage: React.FC = () => {
             className={classNames(styles.filterBtn, { [styles.active]: filter === 'all' })}
             onClick={() => setFilter('all')}
           >
-            全部 ({allNotices.length})
+            全部 ({displayActive})
           </Button>
           <Button
             className={classNames(styles.filterBtn, { [styles.active]: filter === 'unread' })}
@@ -98,13 +136,29 @@ const NoticesPage: React.FC = () => {
             className={classNames(styles.filterBtn, { [styles.active]: filter === 'read' })}
             onClick={() => setFilter('read')}
           >
-            已读 ({readCount})
+            已读 ({activeReadCount})
           </Button>
+          {isCurrentUserAdmin() && (
+            <Button
+              className={classNames(styles.filterBtn, styles.expiredBtn, { [styles.active]: filter === 'expired' })}
+              onClick={() => setFilter('expired')}
+            >
+              已过期 ({expiredNotices.length})
+            </Button>
+          )}
         </View>
 
+        {isCurrentUserAdmin() && filter === 'expired' && expiredNotices.length > 0 && (
+          <View className={styles.adminTip}>
+            <Text className={styles.adminTipText}>
+              ℹ️ 仅管理员可见。已过期公告不会出现在普通成员的列表里。
+            </Text>
+          </View>
+        )}
+
         <View className={styles.noticeList}>
-          {filteredNotices.length > 0 ? (
-            filteredNotices.map((notice) => (
+          {visibleList.length > 0 ? (
+            visibleList.map((notice) => (
               <NoticeCard key={notice.id} notice={notice} />
             ))
           ) : (

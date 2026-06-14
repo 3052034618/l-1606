@@ -116,25 +116,58 @@ export const useTaskStore = create<TaskState>((set, get) => ({
   },
 
   rateTask: (taskId, score, comment) => {
-    const { currentUser } = useFamilyStore.getState();
-    const rating: TaskRating = {
-      fromUserId: currentUser.id,
-      fromUserName: currentUser.name,
-      score,
-      comment,
-      createTime: getTodayTimeString(),
-    };
+    const { currentUser, isCurrentUserAdmin } = useFamilyStore.getState();
+
+    if (!isCurrentUserAdmin()) {
+      console.log('[Task] 非管理员无法评分', { userId: currentUser.id });
+      return;
+    }
 
     set((state) => ({
       tasks: state.tasks.map((t) => {
         if (t.id !== taskId) return t;
-        const newRatings = [...t.ratings, rating];
-        const averageScore =
-          newRatings.reduce((sum, r) => sum + r.score, 0) / newRatings.length;
-        return { ...t, ratings: newRatings, averageScore };
+
+        const existingIdx = t.ratings.findIndex(
+          (r) => r.fromUserId === currentUser.id
+        );
+
+        let newRatings: TaskRating[];
+        if (existingIdx >= 0) {
+          newRatings = t.ratings.map((r, idx) =>
+            idx === existingIdx
+              ? { ...r, score, comment, createTime: getTodayTimeString() }
+              : r
+          );
+        } else {
+          const rating: TaskRating = {
+            fromUserId: currentUser.id,
+            fromUserName: currentUser.name,
+            score,
+            comment,
+            createTime: getTodayTimeString(),
+          };
+          newRatings = [...t.ratings, rating];
+        }
+
+        const uniqueMap = new Map<string, TaskRating>();
+        newRatings.forEach((r) => uniqueMap.set(r.fromUserId, r));
+        const dedupedRatings = Array.from(uniqueMap.values());
+
+        const averageScore = Math.round(
+          dedupedRatings.reduce((sum, r) => sum + r.score, 0) / dedupedRatings.length * 10
+        ) / 10;
+
+        console.log('[Task] 任务评分完成', {
+          taskId,
+          fromUser: currentUser.name,
+          score,
+          isUpdate: existingIdx >= 0,
+          averageScore,
+        });
+
+        return { ...t, ratings: dedupedRatings, averageScore };
       }),
     }));
-    console.log('[Task] 任务评分完成', { taskId, score });
   },
 
   checkOverdueTasks: () => {

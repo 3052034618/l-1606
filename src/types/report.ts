@@ -1,3 +1,11 @@
+export interface TaskBrief {
+  id: string;
+  title: string;
+  assigneeName?: string;
+  deadline: string;
+  status: string;
+}
+
 export interface DailyReport {
   id: string;
   date: string;
@@ -5,6 +13,9 @@ export interface DailyReport {
   totalTasks: number;
   completedTasks: number;
   overdueTasks: number;
+  newTasks: TaskBrief[];
+  doneTasks: TaskBrief[];
+  overdueTaskList: TaskBrief[];
   noticeReadRate: number;
   totalNotices: number;
   readNotices: number;

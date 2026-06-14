@@ -106,3 +106,31 @@
   color: $color-text-tertiary;
   flex-shrink: 0;
 }
+
+.expired {
+  opacity: 0.75;
+  background: linear-gradient(135deg, #F5F5F5 0%, #FAFAFA 100%);
+  border-left: 6rpx solid #95a5a6;
+}
+
+.expiredTag {
+  display: inline-block;
+  padding: 4rpx 16rpx;
+  background: rgba(149, 165, 166, 0.15);
+  color: #7f8c8d;
+  border-radius: $radius-round;
+  font-size: 20rpx;
+  margin-right: $spacing-sm;
+  flex-shrink: 0;
+}
+
+.expiredInfo {
+  margin-top: $spacing-xs;
+  padding-top: $spacing-xs;
+  border-top: 1rpx dashed rgba(149, 165, 166, 0.3);
+}
+
+.expiredInfoText {
+  font-size: $font-size-xs;
+  color: #7f8c8d;
+}

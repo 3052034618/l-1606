@@ -13,6 +13,9 @@ interface NoticeState {
   notices: Notice[];
   loading: boolean;
   getNotices: () => Notice[];
+  getAllNotices: () => Notice[];
+  getActiveNotices: () => Notice[];
+  getExpiredNotices: () => Notice[];
   getNoticeById: (id: string) => Notice | undefined;
   createNotice: (form: CreateNoticeForm) => { success: boolean; message?: string };
   markAsRead: (noticeId: string) => void;
@@ -28,6 +31,21 @@ export const useNoticeStore = create<NoticeState>((set, get) => ({
   getNotices: () => {
     get().checkExpiredNotices();
     return get().notices.filter((n) => !n.isExpired);
+  },
+
+  getAllNotices: () => {
+    get().checkExpiredNotices();
+    return get().notices;
+  },
+
+  getActiveNotices: () => {
+    get().checkExpiredNotices();
+    return get().notices.filter((n) => !n.isExpired);
+  },
+
+  getExpiredNotices: () => {
+    get().checkExpiredNotices();
+    return get().notices.filter((n) => n.isExpired);
   },
 
   getNoticeById: (id) => {

@@ -24,13 +24,18 @@ const TaskDetailPage: React.FC = () => {
 
   useDidShow(() => {
     console.log('[TaskDetail] 页面显示，任务ID:', taskId);
+    useTaskStore.getState().checkOverdueTasks();
   });
 
   useEffect(() => {
-    if (task && task.status === 'done') {
-      const hasRated = task.ratings.some((r) => r.fromUserId === currentUser.id);
-      if (!hasRated && task.assigneeId !== currentUser.id) {
-        setShowRating(true);
+    if (task && task.status === 'done' && isCurrentUserAdmin()) {
+      const myRating = task.ratings.find((r) => r.fromUserId === currentUser.id);
+      if (myRating) {
+        setRating(myRating.score);
+        setRatingComment(myRating.comment || '');
+      } else {
+        setRating(0);
+        setRatingComment('');
       }
     }
   }, [task?.id, task?.status]);
@@ -90,21 +95,23 @@ const TaskDetailPage: React.FC = () => {
       return;
     }
     rateTask(task.id, rating, ratingComment);
-    Taro.showToast({ title: '评分成功', icon: 'success' });
+    const isUpdate = task.ratings.some((r) => r.fromUserId === currentUser.id);
+    Taro.showToast({ title: isUpdate ? '评分已更新' : '评分成功', icon: 'success' });
     setShowRating(false);
-    console.log('[TaskDetail] 任务评分完成', { taskId: task.id, score: rating });
+    console.log('[TaskDetail] 任务评分完成', { taskId: task.id, score: rating, isUpdate });
   };
 
   const isAssignee = task.assigneeId === currentUser.id;
   const canClaim = task.status === 'todo';
   const canComplete = (task.status === 'doing' || task.status === 'overdue') && isAssignee;
   const hasRated = task.ratings.some((r) => r.fromUserId === currentUser.id);
-  const canRate = task.status === 'done' && !hasRated && isCurrentUserAdmin();
+  const canRate = task.status === 'done' && isCurrentUserAdmin();
+  const myRating = task.ratings.find((r) => r.fromUserId === currentUser.id);
 
   const assignee = task.assigneeId ? getMemberById(task.assigneeId) : null;
 
-  const averageScore = task.ratings.length > 0
-    ? (task.ratings.reduce((sum, r) => sum + r.score, 0) / task.ratings.length).toFixed(1)
+  const averageScore = task.averageScore
+    ? task.averageScore.toFixed(1)
     : null;
 
   return (
@@ -196,7 +203,14 @@ const TaskDetailPage: React.FC = () => {
 
       {showRating && (
         <View className={styles.ratingSection}>
-          <Text className={styles.sectionTitle}>为任务评分</Text>
+          <Text className={styles.sectionTitle}>
+            {myRating ? '更新任务评分' : '为任务评分'}
+          </Text>
+          {myRating && (
+            <Text style={{ fontSize: '24rpx', color: '#FF7A45', marginBottom: '16rpx' }}>
+              💡 已评 {myRating.score} 星，可重新评分覆盖旧记录
+            </Text>
+          )}
           <View className={styles.ratingStars}>
             {[1, 2, 3, 4, 5].map((star) => (
               <Text
@@ -225,7 +239,7 @@ const TaskDetailPage: React.FC = () => {
               className={classNames(styles.btn, styles.primary)}
               onClick={handleSubmitRating}
             >
-              提交评分
+              {myRating ? '更新评分' : '提交评分'}
             </Button>
           </View>
         </View>
@@ -247,7 +261,7 @@ const TaskDetailPage: React.FC = () => {
             className={classNames(styles.btn, styles.primary)}
             onClick={() => setShowRating(true)}
           >
-            去评分
+            {hasRated ? '更新评分' : '去评分'}
           </Button>
         )}
         {!canClaim && !canComplete && !canRate && (

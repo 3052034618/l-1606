@@ -77,3 +77,27 @@
     transform: scale(0.95);
   }
 }
+
+.expiredBtn {
+  background: rgba(120, 120, 120, 0.1);
+  color: #666;
+
+  &.active {
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    color: white;
+  }
+}
+
+.adminTip {
+  margin: 0 $page-padding $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(149, 165, 166, 0.1);
+  border-left: 6rpx solid #95a5a6;
+  border-radius: 0 $radius-md $radius-md 0;
+}
+
+.adminTipText {
+  font-size: $font-size-xs;
+  color: #666;
+  line-height: 1.6;
+}

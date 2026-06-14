@@ -312,3 +312,135 @@
   color: $color-primary;
   font-weight: $font-weight-medium;
 }
+
+.dateSelector {
+  margin: $spacing-lg $page-padding 0;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.dateTabs {
+  display: flex;
+  gap: $spacing-sm;
+  overflow-x: auto;
+  flex-wrap: wrap;
+}
+
+.dateTab {
+  flex-shrink: 0;
+  padding: $spacing-sm $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  transition: all $transition-fast;
+
+  &.active {
+    background: $gradient-primary;
+    color: $color-text-white;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.taskListSection {
+  margin: $spacing-lg $page-padding 0;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.taskListHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.taskListTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+}
+
+.taskCountBadge {
+  background: $gradient-primary;
+  color: $color-text-white;
+  padding: 4rpx 16rpx;
+  border-radius: $radius-round;
+  font-size: $font-size-xs;
+  margin-left: $spacing-sm;
+}
+
+.taskListItem {
+  padding: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-sm;
+  margin-bottom: $spacing-sm;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.taskItemTitle {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  display: block;
+  margin-bottom: $spacing-xs;
+}
+
+.taskItemMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.statusTag {
+  padding: 2rpx 12rpx;
+  border-radius: $radius-round;
+  font-size: 20rpx;
+}
+
+.statusTodo {
+  background: rgba(130, 130, 130, 0.1);
+  color: #888;
+}
+
+.statusDoing {
+  background: rgba(255, 122, 69, 0.1);
+  color: $color-primary;
+}
+
+.statusDone {
+  background: rgba(82, 196, 26, 0.1);
+  color: $color-success;
+}
+
+.statusOverdue {
+  background: rgba(255, 59, 48, 0.1);
+  color: $color-error;
+}
+
+.emptyTaskList {
+  padding: $spacing-xl 0;
+  text-align: center;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.historyItemDetail {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.historyRate + .historyRate {
+  margin-left: $spacing-sm;
+}
