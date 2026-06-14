@@ -1,0 +1,298 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 120rpx;
+}
+
+.header {
+  padding: $spacing-lg $page-padding;
+  background: $color-bg-card;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+}
+
+.monthText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.navBtn {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-md;
+  background: $color-bg-page;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+  border: none;
+}
+
+.todayBtn {
+  padding: 12rpx 24rpx;
+  border-radius: $radius-md;
+  background: rgba(255, 122, 69, 0.1);
+  color: $color-primary;
+  font-size: $font-size-sm;
+  border: none;
+}
+
+.calendar {
+  background: $color-bg-card;
+  padding: 0 $page-padding $spacing-lg;
+}
+
+.weekRow {
+  display: flex;
+}
+
+.weekDay {
+  flex: 1;
+  text-align: center;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  padding: $spacing-sm 0;
+  font-weight: $font-weight-medium;
+
+  &.weekend {
+    color: $color-error;
+  }
+}
+
+.daysGrid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.dayCell {
+  width: calc(100% / 7);
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.dayBtn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  background: transparent;
+  border: none;
+  transition: all $transition-base;
+
+  &.otherMonth {
+    color: $color-border;
+  }
+
+  &.today {
+    background: $gradient-primary;
+    color: $color-text-white;
+    font-weight: $font-weight-semibold;
+  }
+
+  &.selected {
+    border: 3rpx solid $color-primary;
+  }
+
+  &.hasEvent::after {
+    content: '';
+    position: absolute;
+    bottom: 4rpx;
+    width: 8rpx;
+    height: 8rpx;
+    border-radius: 50%;
+    background: $color-primary;
+  }
+
+  &.hasEvent.selected::after {
+    bottom: 2rpx;
+  }
+}
+
+.eventDot {
+  display: flex;
+  gap: 4rpx;
+  margin-top: 4rpx;
+  min-height: 8rpx;
+}
+
+.dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: $color-primary;
+}
+
+.eventsSection {
+  padding: $spacing-lg $page-padding;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.addBtn {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-md;
+  background: $gradient-primary;
+  color: $color-text-white;
+  font-size: $font-size-xl;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+}
+
+.eventList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.eventCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  border-left: 6rpx solid $color-primary;
+  display: flex;
+  align-items: flex-start;
+}
+
+.eventTime {
+  width: 120rpx;
+  flex-shrink: 0;
+}
+
+.eventDate {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  display: block;
+}
+
+.eventMonth {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.eventContent {
+  flex: 1;
+}
+
+.eventTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  display: block;
+  margin-bottom: $spacing-xs;
+}
+
+.eventDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  display: block;
+  margin-bottom: $spacing-xs;
+}
+
+.eventMeta {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.eventTypeTag {
+  display: inline-block;
+  padding: 2rpx 12rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  background: rgba(255, 122, 69, 0.1);
+  color: $color-primary;
+}
+
+.emptyState {
+  padding: $spacing-xxl 0;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 120rpx;
+  display: block;
+  margin-bottom: $spacing-md;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.upcomingSection {
+  padding: 0 $page-padding $spacing-lg;
+}
+
+.upcomingList {
+  display: flex;
+  gap: $spacing-md;
+  overflow-x: auto;
+  padding-bottom: $spacing-sm;
+}
+
+.upcomingCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md $spacing-lg;
+  min-width: 240rpx;
+  box-shadow: $shadow-card;
+  flex-shrink: 0;
+}
+
+.upcomingDate {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  display: block;
+}
+
+.upcomingTitle {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  display: block;
+  margin-top: $spacing-xs;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upcomingDays {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+  margin-top: 4rpx;
+}

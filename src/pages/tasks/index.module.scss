@@ -1,0 +1,111 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 140rpx;
+}
+
+.filterBar {
+  display: flex;
+  padding: $spacing-md $page-padding;
+  background: $color-bg-card;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: $shadow-card;
+  gap: $spacing-sm;
+  overflow-x: auto;
+}
+
+.filterItem {
+  @include button-reset;
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  background: $color-bg-hover;
+  white-space: nowrap;
+  transition: all $transition-base;
+
+  &.active {
+    background: $gradient-primary;
+    color: $color-text-white;
+  }
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.statsRow {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-md $page-padding;
+}
+
+.statCard {
+  flex: 1;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  text-align: center;
+  box-shadow: $shadow-card;
+}
+
+.statValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  display: block;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+  margin-top: $spacing-xs;
+}
+
+.todo {
+  color: $color-task-todo;
+}
+
+.doing {
+  color: $color-task-doing;
+}
+
+.done {
+  color: $color-task-done;
+}
+
+.overdue {
+  color: $color-task-overdue;
+}
+
+.taskList {
+  padding: 0 $page-padding;
+  margin-top: $spacing-md;
+}
+
+.fab {
+  @include button-reset;
+  position: fixed;
+  right: $page-padding;
+  bottom: 120rpx;
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background: $gradient-primary;
+  color: $color-text-white;
+  font-size: 56rpx;
+  box-shadow: $shadow-popup;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.95);
+    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+  }
+}

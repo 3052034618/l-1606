@@ -1,0 +1,45 @@
+// ============================================
+// 主题配色变量（家庭共享事务管理APP）
+// ============================================
+
+// 品牌主题色：温暖橙色，营造家庭温馨氛围
+$color-primary: #FF7A45;
+$color-primary-light: #FF9A6B;
+$color-primary-dark: #E85D2A;
+
+// 功能色
+$color-success: #00b42a;
+$color-warning: #ff7d00;
+$color-error: #f53f3f;
+$color-info: #165dff;
+
+// 辅助色
+$color-secondary: #4CAF50;
+$color-secondary-light: #81C784;
+
+// 背景色
+$color-bg-page: #FFF8F3;
+$color-bg-card: #ffffff;
+$color-bg-hover: #FFF2EC;
+
+// 文本色
+$color-text-primary: #1d2129;
+$color-text-secondary: #4e5969;
+$color-text-tertiary: #86909c;
+$color-text-disabled: #c9cdd4;
+$color-text-white: #ffffff;
+
+// 边框色
+$color-border: #e5e6eb;
+$color-divider: #f2f3f5;
+
+// 业务状态色
+$color-task-todo: #FF7A45;
+$color-task-doing: #165DFF;
+$color-task-done: #00B42A;
+$color-task-overdue: #F53F3F;
+
+// 渐变
+$gradient-primary: linear-gradient(135deg, #FF7A45 0%, #FF9A6B 100%);
+$gradient-success: linear-gradient(135deg, #00B42A 0%, #4CAF50 100%);
+$gradient-bg: linear-gradient(180deg, #FFF8F3 0%, #FFFFFF 100%);

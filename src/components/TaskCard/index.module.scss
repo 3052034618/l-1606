@@ -1,0 +1,138 @@
+@use '@/styles/variables.scss' as *;
+
+.taskCard {
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+.cardHeader {
+  margin-bottom: $spacing-md;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-xs;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  flex: 1;
+  margin-right: $spacing-sm;
+}
+
+.tagPrimary {
+  background: rgba(255, 122, 69, 0.1);
+  color: $color-primary;
+}
+
+.tagSuccess {
+  background: rgba(0, 180, 42, 0.1);
+  color: $color-success;
+}
+
+.tagInfo {
+  background: rgba(22, 93, 255, 0.1);
+  color: $color-info;
+}
+
+.tagError {
+  background: rgba(245, 63, 63, 0.1);
+  color: $color-error;
+}
+
+.creator {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.cardBody {
+  margin-bottom: $spacing-md;
+}
+
+.description {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+  @include text-ellipsis-multi(2);
+}
+
+.cardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  font-size: $font-size-sm;
+}
+
+.metaLabel {
+  color: $color-text-tertiary;
+}
+
+.metaValue {
+  color: $color-text-secondary;
+}
+
+.overdue {
+  color: $color-error;
+  font-weight: $font-weight-medium;
+}
+
+.repeatTag {
+  background: rgba(255, 122, 69, 0.08);
+  color: $color-primary;
+}
+
+.score {
+  color: #ffc107;
+  font-size: $font-size-sm;
+  margin-right: $spacing-xs;
+}
+
+.scoreNum {
+  color: $color-text-tertiary;
+  font-size: $font-size-xs;
+}
+
+.cardActions {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.actionBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-md;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.primaryBtn {
+  background: $gradient-primary;
+  color: $color-text-white;
+  border: none;
+}
+
+.successBtn {
+  background: $gradient-success;
+  color: $color-text-white;
+  border: none;
+}

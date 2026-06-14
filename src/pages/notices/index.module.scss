@@ -1,0 +1,79 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 140rpx;
+}
+
+.header {
+  padding: $spacing-lg $page-padding;
+  background: $gradient-primary;
+  color: $color-text-white;
+}
+
+.title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  display: block;
+  margin-bottom: $spacing-xs;
+}
+
+.subtitle {
+  font-size: $font-size-sm;
+  opacity: 0.9;
+  display: block;
+}
+
+.filterBar {
+  display: flex;
+  padding: $spacing-md $page-padding;
+  background: $color-bg-card;
+  gap: $spacing-sm;
+}
+
+.filterBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-md;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  background: $color-bg-hover;
+  transition: all $transition-base;
+
+  &.active {
+    background: $gradient-primary;
+    color: $color-text-white;
+  }
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.noticeList {
+  padding: $spacing-md $page-padding;
+}
+
+.fab {
+  @include button-reset;
+  position: fixed;
+  right: $page-padding;
+  bottom: 120rpx;
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background: $gradient-primary;
+  color: $color-text-white;
+  font-size: 56rpx;
+  box-shadow: $shadow-popup;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.95);
+  }
+}

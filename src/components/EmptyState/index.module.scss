@@ -1,0 +1,48 @@
+@use '@/styles/variables.scss' as *;
+
+.emptyState {
+  padding: 80rpx $spacing-lg;
+  text-align: center;
+}
+
+.icon {
+  margin-bottom: $spacing-lg;
+}
+
+.iconText {
+  font-size: 120rpx;
+  line-height: 1;
+  opacity: 0.5;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: block;
+  margin-bottom: $spacing-sm;
+}
+
+.description {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+  display: block;
+  margin-bottom: $spacing-xl;
+}
+
+.actionBtn {
+  @include button-reset;
+  height: $button-height-md;
+  padding: 0 $spacing-xl;
+  background: $gradient-primary;
+  color: $color-text-white;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  display: inline-flex;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}

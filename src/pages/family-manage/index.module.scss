@@ -1,0 +1,314 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 120rpx;
+}
+
+.familyHeader {
+  padding: $spacing-xl $page-padding;
+  background: $gradient-primary;
+  color: $color-text-white;
+  text-align: center;
+}
+
+.familyName {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  display: block;
+  margin-bottom: $spacing-xs;
+}
+
+.familyId {
+  font-size: $font-size-sm;
+  opacity: 0.9;
+  display: block;
+}
+
+.memberCount {
+  font-size: $font-size-xs;
+  opacity: 0.8;
+  margin-top: $spacing-xs;
+  display: block;
+}
+
+.section {
+  margin: $spacing-lg $page-padding 0;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-lg;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionIcon {
+  font-size: 32rpx;
+  margin-right: $spacing-sm;
+}
+
+.addBtn {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-md;
+  background: $gradient-primary;
+  color: $color-text-white;
+  font-size: $font-size-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+}
+
+.memberList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.memberCard {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+}
+
+.memberAvatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  margin-right: $spacing-md;
+  background: $color-bg-card;
+  border: 3rpx solid transparent;
+
+  &.isAdmin {
+    border-color: $color-primary;
+  }
+}
+
+.memberInfo {
+  flex: 1;
+}
+
+.memberName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.memberRole {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.roleBadge {
+  display: inline-block;
+  padding: 2rpx 12rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+
+  &.admin {
+    background: rgba(255, 122, 69, 0.1);
+    color: $color-primary;
+  }
+
+  &.member {
+    background: rgba(0, 180, 42, 0.1);
+    color: $color-success;
+  }
+}
+
+.memberStats {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+  display: block;
+}
+
+.memberActions {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.actionBtn {
+  padding: 8rpx 20rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+
+  &.primary {
+    background: rgba(255, 122, 69, 0.1);
+    color: $color-primary;
+  }
+
+  &.danger {
+    background: rgba(245, 63, 63, 0.1);
+    color: $color-error;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.statsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.statCard {
+  flex: 1;
+  min-width: calc(50% - 16rpx);
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  text-align: center;
+}
+
+.statValue {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  display: block;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+  margin-top: $spacing-xs;
+}
+
+.familyInfo {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.infoLabel {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.infoValue {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.editBtn {
+  padding: 8rpx 20rpx;
+  border-radius: $radius-sm;
+  background: $color-bg-page;
+  color: $color-primary;
+  font-size: $font-size-xs;
+  border: none;
+}
+
+.dangerZone {
+  margin: $spacing-xl $page-padding;
+  padding: $spacing-lg;
+  background: rgba(245, 63, 63, 0.05);
+  border: 2rpx solid rgba(245, 63, 63, 0.2);
+  border-radius: $radius-lg;
+}
+
+.dangerTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-error;
+  margin-bottom: $spacing-md;
+  display: block;
+}
+
+.dangerDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-lg;
+  line-height: 1.6;
+}
+
+.dangerBtn {
+  width: 100%;
+  height: 80rpx;
+  border-radius: $radius-md;
+  background: $color-error;
+  color: $color-text-white;
+  font-size: $font-size-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.emptyState {
+  padding: $spacing-xxl 0;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 120rpx;
+  display: block;
+  margin-bottom: $spacing-md;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.tabBar {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.tabBtn {
+  flex: 1;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  background: $color-bg-page;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+
+  &.active {
+    background: rgba(255, 122, 69, 0.1);
+    border-color: $color-primary;
+    color: $color-primary;
+  }
+}

@@ -1,0 +1,212 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 160rpx;
+}
+
+.headerSection {
+  padding: $spacing-xl $page-padding;
+  background: $color-bg-card;
+}
+
+.statusTag {
+  display: inline-block;
+  padding: 8rpx 24rpx;
+  border-radius: $radius-round;
+  font-size: $font-size-sm;
+  margin-bottom: $spacing-md;
+
+  &.todo { background: rgba(255, 122, 69, 0.1); color: $color-task-todo; }
+  &.pending { background: rgba(250, 173, 20, 0.1); color: $color-warning; }
+  &.done { background: rgba(0, 180, 42, 0.1); color: $color-task-done; }
+  &.overdue { background: rgba(245, 63, 63, 0.1); color: $color-error; }
+}
+
+.taskTitle {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  line-height: 1.4;
+  display: block;
+  margin-bottom: $spacing-md;
+}
+
+.taskDesc {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.metaSection {
+  padding: $spacing-lg $page-padding;
+  margin-top: $spacing-sm;
+  background: $color-bg-card;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.metaLabel {
+  width: 160rpx;
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.metaValue {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.memberRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.assigneeItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.assigneeAvatar {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: $color-bg-page;
+}
+
+.assigneeName {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.ratingSection {
+  padding: $spacing-xl $page-padding;
+  background: $color-bg-card;
+  margin-top: $spacing-sm;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-lg;
+  display: block;
+}
+
+.ratingStars {
+  display: flex;
+  gap: $spacing-lg;
+  justify-content: center;
+  margin-bottom: $spacing-lg;
+}
+
+.star {
+  font-size: 72rpx;
+  color: $color-border;
+  transition: all $transition-base;
+
+  &.active {
+    color: #FFD700;
+    transform: scale(1.1);
+  }
+}
+
+.ratingInput {
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  min-height: 160rpx;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.historySection {
+  padding: $spacing-xl $page-padding;
+  background: $color-bg-card;
+  margin-top: $spacing-sm;
+}
+
+.historyItem {
+  display: flex;
+  padding: $spacing-md 0;
+  border-left: 3rpx solid $color-primary;
+  padding-left: $spacing-lg;
+  margin-left: 16rpx;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -11rpx;
+    top: $spacing-md;
+    width: 16rpx;
+    height: 16rpx;
+    border-radius: 50%;
+    background: $color-primary;
+  }
+}
+
+.historyContent {
+  flex: 1;
+}
+
+.historyText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  display: block;
+}
+
+.historyTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+  margin-top: $spacing-xs;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: $spacing-lg $page-padding $spacing-xl;
+  background: $color-bg-card;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  gap: $spacing-md;
+}
+
+.btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: $radius-md;
+  font-size: $font-size-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+
+  &.primary {
+    background: $gradient-primary;
+    color: $color-text-white;
+  }
+
+  &.secondary {
+    background: $color-bg-page;
+    color: $color-text-primary;
+  }
+}

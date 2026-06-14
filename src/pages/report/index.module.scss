@@ -1,0 +1,314 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 120rpx;
+}
+
+.header {
+  padding: $spacing-xl $page-padding;
+  background: $gradient-primary;
+  color: $color-text-white;
+}
+
+.reportTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  display: block;
+  margin-bottom: $spacing-xs;
+}
+
+.reportDate {
+  font-size: $font-size-sm;
+  opacity: 0.9;
+}
+
+.generateTime {
+  font-size: $font-size-xs;
+  opacity: 0.8;
+  margin-top: $spacing-xs;
+  display: block;
+}
+
+.summarySection {
+  margin: -40rpx $page-padding 0;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  position: relative;
+  z-index: 2;
+}
+
+.summaryGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.summaryCard {
+  flex: 1;
+  min-width: calc(50% - 16rpx);
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  text-align: center;
+}
+
+.summaryValue {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  display: block;
+  line-height: 1.2;
+}
+
+.summaryLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+  margin-top: $spacing-xs;
+}
+
+.primaryColor { color: $color-primary; }
+.successColor { color: $color-success; }
+.warningColor { color: $color-warning; }
+.infoColor { color: $color-info; }
+
+.section {
+  margin: $spacing-lg $page-padding 0;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-lg;
+  display: flex;
+  align-items: center;
+}
+
+.sectionIcon {
+  font-size: 32rpx;
+  margin-right: $spacing-sm;
+}
+
+.progressRow {
+  margin-bottom: $spacing-md;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.progressLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.progressValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.progressBar {
+  height: 12rpx;
+  background: $color-bg-page;
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: $gradient-primary;
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}
+
+.successFill {
+  background: $color-success;
+}
+
+.warningFill {
+  background: $color-warning;
+}
+
+.rankingList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.rankingItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+}
+
+.rankingNum {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  margin-right: $spacing-md;
+  background: $color-bg-hover;
+  color: $color-text-tertiary;
+
+  &.top1 {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: $color-text-white;
+  }
+
+  &.top2 {
+    background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
+    color: $color-text-white;
+  }
+
+  &.top3 {
+    background: linear-gradient(135deg, #CD7F32 0%, #A0522D 100%);
+    color: $color-text-white;
+  }
+}
+
+.memberAvatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  margin-right: $spacing-md;
+  background: $color-bg-card;
+}
+
+.memberInfo {
+  flex: 1;
+}
+
+.memberName {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  display: block;
+}
+
+.memberTasks {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.memberScore {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.tipBox {
+  margin: $spacing-lg $page-padding;
+  padding: $spacing-lg;
+  background: rgba(255, 122, 69, 0.05);
+  border: 2rpx solid rgba(255, 122, 69, 0.2);
+  border-radius: $radius-md;
+}
+
+.tipTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  display: block;
+  margin-bottom: $spacing-sm;
+}
+
+.tipContent {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+.historySection {
+  margin: $spacing-lg $page-padding;
+}
+
+.historyTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.historyItem {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-md $spacing-lg;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: $shadow-card;
+}
+
+.historyDate {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.historyRate {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-success;
+}
+
+.weekChart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 200rpx;
+  padding: $spacing-lg 0;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  margin-top: $spacing-md;
+}
+
+.chartBar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.barFill {
+  width: 40rpx;
+  background: $gradient-primary;
+  border-radius: 8rpx 8rpx 0 0;
+  min-height: 8rpx;
+  transition: height $transition-base;
+}
+
+.barLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.barValue {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}

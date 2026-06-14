@@ -1,0 +1,50 @@
+@use '@/styles/variables.scss' as *;
+
+.statCard {
+  padding: $spacing-lg;
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.title {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  display: block;
+  margin-bottom: $spacing-sm;
+}
+
+.value {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  display: block;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+  margin-top: $spacing-xs;
+}
+
+.primary .value {
+  color: $color-primary;
+}
+
+.success .value {
+  color: $color-success;
+}
+
+.warning .value {
+  color: $color-warning;
+}
+
+.error .value {
+  color: $color-error;
+}
+
+.info .value {
+  color: $color-info;
+}
