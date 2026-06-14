@@ -94,18 +94,6 @@ const ReportPage: React.FC = () => {
 
   const handleDateSelect = (date: string) => {
     setSelectedDate(date);
-    const existing = getReportByDate(date);
-    if (!existing) {
-      Taro.showModal({
-        title: `查看 ${date} 简报`,
-        content: `${date} 还没有生成过简报，是否基于当前数据生成一份？\n（注意：历史数据为回溯快照）`,
-        success: (r) => {
-          if (r.confirm) {
-            generateDailyReport(date);
-          }
-        },
-      });
-    }
   };
 
   const weekDays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
@@ -117,22 +105,13 @@ const ReportPage: React.FC = () => {
     return styles.warningFill;
   };
 
-  if (!currentReport) {
-    return (
-      <ScrollView className={styles.page} scrollY>
-        <View style={{ padding: '200rpx' }}>
-          <EmptyState
-            title="暂无简报数据"
-            description="每日凌晨将自动生成简报"
-          />
-        </View>
-      </ScrollView>
-    );
-  }
+  const sortedContributions = currentReport?.memberContributions
+    ? [...currentReport.memberContributions].sort((a, b) => b.completedTasks - a.completedTasks)
+    : [];
 
-  const sortedContributions = [...currentReport.memberContributions].sort(
-    (a, b) => b.completedTasks - a.completedTasks
-  );
+  const newTaskList = currentReport?.newTasks || [];
+  const doneTaskList = currentReport?.doneTasks || [];
+  const overdueTaskList = currentReport?.overdueTaskList || [];
 
   return (
     <ScrollView className={styles.page} scrollY>
@@ -174,15 +153,15 @@ const ReportPage: React.FC = () => {
         <View className={styles.noReportWrap}>
           <EmptyState
             title={`${selectedDate} 暂无简报`}
-            description="该日期还没有生成过简报，可点击下方按钮基于当前数据生成一份（历史快照）"
-            actionText="立即生成简报"
+            description="该日期还没有生成过简报，点击下方按钮基于当前数据生成一份历史快照"
+            actionText="生成当日简报"
             onAction={() => generateDailyReport(selectedDate)}
           />
         </View>
       )}
 
       {!currentReport && !selectedDate && (
-        <View style={{ padding: '200rpx' }}>
+        <View className={styles.noReportWrap}>
           <EmptyState
             title="请选择日期查看简报"
             description="每日凌晨将自动生成当日简报，也可手动选择日期生成"
@@ -193,211 +172,211 @@ const ReportPage: React.FC = () => {
       {currentReport && (
         <>
           <View className={styles.summarySection}>
-        <View className={styles.summaryGrid}>
-          <View className={styles.summaryCard}>
-            <Text className={classNames(styles.summaryValue, styles.primaryColor)}>
-              {currentReport.taskCompletionRate}%
-            </Text>
-            <Text className={styles.summaryLabel}>任务完成率</Text>
-          </View>
-          <View className={styles.summaryCard}>
-            <Text className={classNames(styles.summaryValue, styles.successColor)}>
-              {currentReport.noticeReadRate}%
-            </Text>
-            <Text className={styles.summaryLabel}>公告阅读率</Text>
-          </View>
-          <View className={styles.summaryCard}>
-            <Text className={classNames(styles.summaryValue, styles.infoColor)}>
-              {currentReport.shoppingCompletionRate}%
-            </Text>
-            <Text className={styles.summaryLabel}>购物完成度</Text>
-          </View>
-          <View className={styles.summaryCard}>
-            <Text className={classNames(styles.summaryValue, styles.warningColor)}>
-              {currentReport.overdueTasks}
-            </Text>
-            <Text className={styles.summaryLabel}>逾期任务</Text>
-          </View>
-        </View>
-      </View>
-
-      <View className={styles.section}>
-        <Text className={styles.sectionTitle}>
-          <Text className={styles.sectionIcon}>📈</Text>
-          完成度详情
-        </Text>
-        <View className={styles.progressRow}>
-          <View className={styles.progressHeader}>
-            <Text className={styles.progressLabel}>任务完成</Text>
-            <Text className={styles.progressValue}>
-              {currentReport.completedTasks}/{currentReport.totalTasks} 项
-            </Text>
-          </View>
-          <View className={styles.progressBar}>
-            <View
-              className={classNames(styles.progressFill, getProgressColor(currentReport.taskCompletionRate))}
-              style={{ width: `${currentReport.taskCompletionRate}%` }}
-            />
-          </View>
-        </View>
-        <View className={styles.progressRow}>
-          <View className={styles.progressHeader}>
-            <Text className={styles.progressLabel}>公告阅读</Text>
-            <Text className={styles.progressValue}>
-              {currentReport.readNotices}/{currentReport.totalNotices} 条
-            </Text>
-          </View>
-          <View className={styles.progressBar}>
-            <View
-              className={classNames(styles.progressFill, getProgressColor(currentReport.noticeReadRate))}
-              style={{ width: `${currentReport.noticeReadRate}%` }}
-            />
-          </View>
-        </View>
-        <View className={styles.progressRow}>
-          <View className={styles.progressHeader}>
-            <Text className={styles.progressLabel}>购物清单</Text>
-            <Text className={styles.progressValue}>
-              {currentReport.checkedShoppingItems}/{currentReport.totalShoppingItems} 项
-            </Text>
-          </View>
-          <View className={styles.progressBar}>
-            <View
-              className={classNames(styles.progressFill, getProgressColor(currentReport.shoppingCompletionRate))}
-              style={{ width: `${currentReport.shoppingCompletionRate}%` }}
-            />
-          </View>
-        </View>
-      </View>
-
-      <View className={styles.taskListSection}>
-        <View className={styles.taskListHeader}>
-          <Text className={styles.taskListTitle}>
-            🆕 今日新增任务
-            <Text className={styles.taskCountBadge}>{currentReport.newTasks.length}</Text>
-          </Text>
-        </View>
-        {renderTaskList(currentReport.newTasks, '今天暂无新增任务')}
-      </View>
-
-      <View className={styles.taskListSection}>
-        <View className={styles.taskListHeader}>
-          <Text className={styles.taskListTitle}>
-            ✅ 今日完成任务
-            <Text className={styles.taskCountBadge}>{currentReport.doneTasks.length}</Text>
-          </Text>
-        </View>
-        {renderTaskList(currentReport.doneTasks, '今天暂无完成任务')}
-      </View>
-
-      <View className={styles.taskListSection}>
-        <View className={styles.taskListHeader}>
-          <Text className={styles.taskListTitle}>
-            ⚠️ 逾期任务明细
-            <Text className={styles.taskCountBadge}>{currentReport.overdueTaskList.length}</Text>
-          </Text>
-        </View>
-        {renderTaskList(currentReport.overdueTaskList, '暂无逾期任务，继续保持！')}
-      </View>
-
-      {weekData.length > 0 && (
-        <View className={styles.section}>
-          <Text className={styles.sectionTitle}>
-            <Text className={styles.sectionIcon}>📊</Text>
-            近7天趋势
-          </Text>
-          <View className={styles.weekChart}>
-            {weekData.map((item, idx) => (
-              <View key={idx} className={styles.chartBar}>
-                <Text className={styles.barValue}>{item.taskCompletionRate}%</Text>
-                <View
-                  className={styles.barFill}
-                  style={{ height: `${Math.max(item.taskCompletionRate * 1.5, 8)}rpx` }}
-                />
-                <Text className={styles.barLabel}>{weekDays[idx % 7] || ''}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-      )}
-
-      {sortedContributions.length > 0 && (
-        <View className={styles.section}>
-          <Text className={styles.sectionTitle}>
-            <Text className={styles.sectionIcon}>🏆</Text>
-            成员贡献榜
-          </Text>
-          <View className={styles.rankingList}>
-            {sortedContributions.map((contrib, idx) => {
-              const member = getMemberById(contrib.memberId);
-              if (!member) return null;
-              return (
-                <View key={contrib.memberId} className={styles.rankingItem}>
-                  <Text
-                    className={classNames(styles.rankingNum, {
-                      [styles.top1]: idx === 0,
-                      [styles.top2]: idx === 1,
-                      [styles.top3]: idx === 2,
-                    })}
-                  >
-                    {idx + 1}
-                  </Text>
-                  <Image
-                    className={styles.memberAvatar}
-                    src={member.avatar}
-                    mode="aspectFill"
-                  />
-                  <View className={styles.memberInfo}>
-                    <Text className={styles.memberName}>{member.name}</Text>
-                    <Text className={styles.memberTasks}>
-                      完成 {contrib.completedTasks} 项任务
-                    </Text>
-                  </View>
-                  <Text className={styles.memberScore}>
-                    +{contrib.earnedScore} 分
-                  </Text>
-                </View>
-              );
-            })}
-          </View>
-        </View>
-      )}
-
-      {currentReport.overdueTasks > 0 && (
-        <View className={styles.tipBox}>
-          <Text className={styles.tipTitle}>⚠️ 注意事项</Text>
-          <Text className={styles.tipContent}>
-            当前有 {currentReport.overdueTasks} 项任务已逾期，请及时提醒家庭成员处理。
-            逾期任务将影响家庭整体协作效率。
-          </Text>
-        </View>
-      )}
-
-      {currentReport && reports.length > 0 && (
-        <View className={styles.historySection}>
-          <Text className={styles.historyTitle}>历史简报列表</Text>
-          <View className={styles.historyList}>
-            {reports.map((item) => (
-              <View
-                key={item.id}
-                className={classNames(styles.historyItem, {
-                  [styles.active]: selectedDate === item.date,
-                })}
-                onClick={() => handleDateSelect(item.date)}
-              >
-                <Text className={styles.historyDate}>
-                  {item.date}
-                  {item.date === formatDate(new Date()) ? '（今日）' : ''}
+            <View className={styles.summaryGrid}>
+              <View className={styles.summaryCard}>
+                <Text className={classNames(styles.summaryValue, styles.primaryColor)}>
+                  {currentReport.taskCompletionRate}%
                 </Text>
-                <View className={styles.historyItemDetail}>
-                  <Text className={styles.historyRate}>任务 {item.taskCompletionRate}%</Text>
-                  <Text className={styles.historyRate}>公告 {item.noticeReadRate}%</Text>
-                </View>
+                <Text className={styles.summaryLabel}>任务完成率</Text>
               </View>
-            ))}
+              <View className={styles.summaryCard}>
+                <Text className={classNames(styles.summaryValue, styles.successColor)}>
+                  {currentReport.noticeReadRate}%
+                </Text>
+                <Text className={styles.summaryLabel}>公告阅读率</Text>
+              </View>
+              <View className={styles.summaryCard}>
+                <Text className={classNames(styles.summaryValue, styles.infoColor)}>
+                  {currentReport.shoppingCompletionRate}%
+                </Text>
+                <Text className={styles.summaryLabel}>购物完成度</Text>
+              </View>
+              <View className={styles.summaryCard}>
+                <Text className={classNames(styles.summaryValue, styles.warningColor)}>
+                  {currentReport.overdueTasks}
+                </Text>
+                <Text className={styles.summaryLabel}>逾期任务</Text>
+              </View>
+            </View>
           </View>
-        </View>
-      )}
+
+          <View className={styles.section}>
+            <Text className={styles.sectionTitle}>
+              <Text className={styles.sectionIcon}>📈</Text>
+              完成度详情
+            </Text>
+            <View className={styles.progressRow}>
+              <View className={styles.progressHeader}>
+                <Text className={styles.progressLabel}>任务完成</Text>
+                <Text className={styles.progressValue}>
+                  {currentReport.completedTasks}/{currentReport.totalTasks} 项
+                </Text>
+              </View>
+              <View className={styles.progressBar}>
+                <View
+                  className={classNames(styles.progressFill, getProgressColor(currentReport.taskCompletionRate))}
+                  style={{ width: `${currentReport.taskCompletionRate}%` }}
+                />
+              </View>
+            </View>
+            <View className={styles.progressRow}>
+              <View className={styles.progressHeader}>
+                <Text className={styles.progressLabel}>公告阅读</Text>
+                <Text className={styles.progressValue}>
+                  {currentReport.readNotices}/{currentReport.totalNotices} 条
+                </Text>
+              </View>
+              <View className={styles.progressBar}>
+                <View
+                  className={classNames(styles.progressFill, getProgressColor(currentReport.noticeReadRate))}
+                  style={{ width: `${currentReport.noticeReadRate}%` }}
+                />
+              </View>
+            </View>
+            <View className={styles.progressRow}>
+              <View className={styles.progressHeader}>
+                <Text className={styles.progressLabel}>购物清单</Text>
+                <Text className={styles.progressValue}>
+                  {currentReport.checkedShoppingItems}/{currentReport.totalShoppingItems} 项
+                </Text>
+              </View>
+              <View className={styles.progressBar}>
+                <View
+                  className={classNames(styles.progressFill, getProgressColor(currentReport.shoppingCompletionRate))}
+                  style={{ width: `${currentReport.shoppingCompletionRate}%` }}
+                />
+              </View>
+            </View>
+          </View>
+
+          <View className={styles.taskListSection}>
+            <View className={styles.taskListHeader}>
+              <Text className={styles.taskListTitle}>
+                🆕 今日新增任务
+                <Text className={styles.taskCountBadge}>{newTaskList.length}</Text>
+              </Text>
+            </View>
+            {renderTaskList(newTaskList, '今天暂无新增任务')}
+          </View>
+
+          <View className={styles.taskListSection}>
+            <View className={styles.taskListHeader}>
+              <Text className={styles.taskListTitle}>
+                ✅ 今日完成任务
+                <Text className={styles.taskCountBadge}>{doneTaskList.length}</Text>
+              </Text>
+            </View>
+            {renderTaskList(doneTaskList, '今天暂无完成任务')}
+          </View>
+
+          <View className={styles.taskListSection}>
+            <View className={styles.taskListHeader}>
+              <Text className={styles.taskListTitle}>
+                ⚠️ 逾期任务明细
+                <Text className={styles.taskCountBadge}>{overdueTaskList.length}</Text>
+              </Text>
+            </View>
+            {renderTaskList(overdueTaskList, '暂无逾期任务，继续保持！')}
+          </View>
+
+          {weekData.length > 0 && (
+            <View className={styles.section}>
+              <Text className={styles.sectionTitle}>
+                <Text className={styles.sectionIcon}>📊</Text>
+                近7天趋势
+              </Text>
+              <View className={styles.weekChart}>
+                {weekData.map((item, idx) => (
+                  <View key={idx} className={styles.chartBar}>
+                    <Text className={styles.barValue}>{item.taskCompletionRate}%</Text>
+                    <View
+                      className={styles.barFill}
+                      style={{ height: `${Math.max(item.taskCompletionRate * 1.5, 8)}rpx` }}
+                    />
+                    <Text className={styles.barLabel}>{weekDays[idx % 7] || ''}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {sortedContributions.length > 0 && (
+            <View className={styles.section}>
+              <Text className={styles.sectionTitle}>
+                <Text className={styles.sectionIcon}>🏆</Text>
+                成员贡献榜
+              </Text>
+              <View className={styles.rankingList}>
+                {sortedContributions.map((contrib, idx) => {
+                  const member = getMemberById(contrib.memberId);
+                  if (!member) return null;
+                  return (
+                    <View key={contrib.memberId} className={styles.rankingItem}>
+                      <Text
+                        className={classNames(styles.rankingNum, {
+                          [styles.top1]: idx === 0,
+                          [styles.top2]: idx === 1,
+                          [styles.top3]: idx === 2,
+                        })}
+                      >
+                        {idx + 1}
+                      </Text>
+                      <Image
+                        className={styles.memberAvatar}
+                        src={member.avatar}
+                        mode="aspectFill"
+                      />
+                      <View className={styles.memberInfo}>
+                        <Text className={styles.memberName}>{member.name}</Text>
+                        <Text className={styles.memberTasks}>
+                          完成 {contrib.completedTasks} 项任务
+                        </Text>
+                      </View>
+                      <Text className={styles.memberScore}>
+                        +{contrib.earnedScore} 分
+                      </Text>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+          )}
+
+          {currentReport.overdueTasks > 0 && (
+            <View className={styles.tipBox}>
+              <Text className={styles.tipTitle}>⚠️ 注意事项</Text>
+              <Text className={styles.tipContent}>
+                当前有 {currentReport.overdueTasks} 项任务已逾期，请及时提醒家庭成员处理。
+                逾期任务将影响家庭整体协作效率。
+              </Text>
+            </View>
+          )}
+
+          {reports.length > 0 && (
+            <View className={styles.historySection}>
+              <Text className={styles.historyTitle}>历史简报列表</Text>
+              <View className={styles.historyList}>
+                {reports.map((item) => (
+                  <View
+                    key={item.id}
+                    className={classNames(styles.historyItem, {
+                      [styles.active]: selectedDate === item.date,
+                    })}
+                    onClick={() => handleDateSelect(item.date)}
+                  >
+                    <Text className={styles.historyDate}>
+                      {item.date}
+                      {item.date === formatDate(new Date()) ? '（今日）' : ''}
+                    </Text>
+                    <View className={styles.historyItemDetail}>
+                      <Text className={styles.historyRate}>任务 {item.taskCompletionRate}%</Text>
+                      <Text className={styles.historyRate}>公告 {item.noticeReadRate}%</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
         </>
       )}
     </ScrollView>

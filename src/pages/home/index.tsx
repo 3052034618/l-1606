@@ -53,6 +53,28 @@ const HomePage: React.FC = () => {
     [notices]
   );
 
+  const noticeStats = useMemo(() => {
+    const active = notices.filter((n) => !n.isExpired);
+    const total = active.length;
+    const read = active.filter((n) => n.readBy.includes(currentUser.id)).length;
+    const totalReads = active.reduce((sum, n) => sum + n.readCount, 0);
+    const totalPossible = active.reduce((sum, n) => sum + n.totalMembers, 0);
+    const readRate = total > 0 && totalPossible > 0
+      ? Math.round((totalReads / totalPossible) * 100)
+      : total === 0
+      ? 100
+      : 0;
+    return { total, read, readRate };
+  }, [notices, currentUser.id]);
+
+  const shoppingItems = useShoppingStore((state) => state.items);
+  const shoppingStats = useMemo(() => {
+    const total = shoppingItems.length;
+    const checked = shoppingItems.filter((i) => i.isChecked).length;
+    const rate = total > 0 ? Math.round((checked / total) * 100) : 100;
+    return { total, checked, rate };
+  }, [shoppingItems]);
+
   const today = getTodayDate();
   const upcomingEvents = useMemo(() => {
     const future = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -84,7 +106,7 @@ const HomePage: React.FC = () => {
   const unreadCount = getUnreadCount(currentUser.id);
   const todayCount = taskStats.todo + taskStats.doing;
   const overdueCount = taskStats.overdue;
-  const shoppingRate = getShoppingCompletionRate();
+  const shoppingRate = shoppingStats.rate;
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -193,65 +215,63 @@ const HomePage: React.FC = () => {
           </View>
         </View>
 
-        {latestReport && (
-          <View className={styles.section}>
-            <View className={styles.sectionHeader}>
-              <Text className={styles.sectionTitle}>数据概览</Text>
-              <Text
-                className={styles.viewAll}
-                onClick={() => Taro.navigateTo({ url: '/pages/report/index' })}
-              >
-                查看详情 →
+        <View className={styles.section}>
+          <View className={styles.sectionHeader}>
+            <Text className={styles.sectionTitle}>数据概览</Text>
+            <Text
+              className={styles.viewAll}
+              onClick={() => Taro.navigateTo({ url: '/pages/report/index' })}
+            >
+              查看详情 →
+            </Text>
+          </View>
+          <View className={styles.statsGrid}>
+            <View className={styles.statCard}>
+              <Text style={{ fontSize: '24rpx', color: '#86909C', display: 'block', marginBottom: '8rpx' }}>
+                任务完成率
+              </Text>
+              <Text style={{ fontSize: '36rpx', fontWeight: 'bold', color: '#00B42A' }}>
+                {taskStats.total > 0 ? Math.round((taskStats.done / taskStats.total) * 100) : 100}%
+              </Text>
+              <Text style={{ fontSize: '20rpx', color: '#86909C', marginTop: '4rpx' }}>
+                {taskStats.done}/{taskStats.total} 已完成
               </Text>
             </View>
-            <View className={styles.statsGrid}>
-              <View className={styles.statCard}>
-                <Text style={{ fontSize: '24rpx', color: '#86909C', display: 'block', marginBottom: '8rpx' }}>
-                  任务完成率
-                </Text>
-                <Text style={{ fontSize: '36rpx', fontWeight: 'bold', color: '#00B42A' }}>
-                  {latestReport.taskCompletionRate}%
-                </Text>
-                <Text style={{ fontSize: '20rpx', color: '#86909C', marginTop: '4rpx' }}>
-                  {latestReport.completedTasks}/{latestReport.totalTasks - latestReport.overdueTasks} 已完成
-                </Text>
-              </View>
-              <View className={styles.statCard}>
-                <Text style={{ fontSize: '24rpx', color: '#86909C', display: 'block', marginBottom: '8rpx' }}>
-                  公告阅读率
-                </Text>
-                <Text style={{ fontSize: '36rpx', fontWeight: 'bold', color: '#165DFF' }}>
-                  {latestReport.noticeReadRate}%
-                </Text>
-                <Text style={{ fontSize: '20rpx', color: '#86909C', marginTop: '4rpx' }}>
-                  {latestReport.readNotices}/{latestReport.totalNotices} 已读
-                </Text>
-              </View>
-              <View className={styles.statCard}>
-                <Text style={{ fontSize: '24rpx', color: '#86909C', display: 'block', marginBottom: '8rpx' }}>
-                  购物完成度
-                </Text>
-                <Text style={{ fontSize: '36rpx', fontWeight: 'bold', color: '#FF7A45' }}>
-                  {shoppingRate}%
-                </Text>
-                <Text style={{ fontSize: '20rpx', color: '#86909C', marginTop: '4rpx' }}>
-                  {latestReport.checkedShoppingItems}/{latestReport.totalShoppingItems} 已购
-                </Text>
-              </View>
-              <View className={styles.statCard}>
-                <Text style={{ fontSize: '24rpx', color: '#86909C', display: 'block', marginBottom: '8rpx' }}>
-                  逾期任务
-                </Text>
-                <Text style={{ fontSize: '36rpx', fontWeight: 'bold', color: '#F53F3F' }}>
-                  {latestReport.overdueTasks}
-                </Text>
-                <Text style={{ fontSize: '20rpx', color: '#86909C', marginTop: '4rpx' }}>
-                  需要及时处理
-                </Text>
-              </View>
+            <View className={styles.statCard}>
+              <Text style={{ fontSize: '24rpx', color: '#86909C', display: 'block', marginBottom: '8rpx' }}>
+                公告阅读率
+              </Text>
+              <Text style={{ fontSize: '36rpx', fontWeight: 'bold', color: '#165DFF' }}>
+                {noticeStats.readRate}%
+              </Text>
+              <Text style={{ fontSize: '20rpx', color: '#86909C', marginTop: '4rpx' }}>
+                {noticeStats.read}/{noticeStats.total} 已读
+              </Text>
+            </View>
+            <View className={styles.statCard}>
+              <Text style={{ fontSize: '24rpx', color: '#86909C', display: 'block', marginBottom: '8rpx' }}>
+                购物完成度
+              </Text>
+              <Text style={{ fontSize: '36rpx', fontWeight: 'bold', color: '#FF7A45' }}>
+                {shoppingStats.rate}%
+              </Text>
+              <Text style={{ fontSize: '20rpx', color: '#86909C', marginTop: '4rpx' }}>
+                {shoppingStats.checked}/{shoppingStats.total} 已购
+              </Text>
+            </View>
+            <View className={styles.statCard}>
+              <Text style={{ fontSize: '24rpx', color: '#86909C', display: 'block', marginBottom: '8rpx' }}>
+                逾期任务
+              </Text>
+              <Text style={{ fontSize: '36rpx', fontWeight: 'bold', color: '#F53F3F' }}>
+                {taskStats.overdue}
+              </Text>
+              <Text style={{ fontSize: '20rpx', color: '#86909C', marginTop: '4rpx' }}>
+                需要及时处理
+              </Text>
             </View>
           </View>
-        )}
+        </View>
 
         <View className={styles.section}>
           <View className={styles.sectionHeader}>

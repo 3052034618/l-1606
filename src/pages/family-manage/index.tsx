@@ -7,6 +7,7 @@ import { useFamilyStore } from '@/store/useFamilyStore';
 import { useTaskStore } from '@/store/useTaskStore';
 import { useNoticeStore } from '@/store/useNoticeStore';
 import EmptyState from '@/components/EmptyState';
+import { formatDateTime } from '@/utils/date';
 
 const FamilyManagePage: React.FC = () => {
   const { family, currentUser, isCurrentUserAdmin, updateMemberRole, removeMember, addMember } = useFamilyStore();
@@ -248,7 +249,7 @@ const FamilyManagePage: React.FC = () => {
             </View>
             <View className={styles.infoRow}>
               <Text className={styles.infoLabel}>创建时间</Text>
-              <Text className={styles.infoValue}>{family.createdAt}</Text>
+              <Text className={styles.infoValue}>{formatDateTime(family.createTime)}</Text>
             </View>
             <View className={styles.infoRow}>
               <Text className={styles.infoLabel}>成员数量</Text>

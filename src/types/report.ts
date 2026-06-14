@@ -13,9 +13,9 @@ export interface DailyReport {
   totalTasks: number;
   completedTasks: number;
   overdueTasks: number;
-  newTasks: TaskBrief[];
-  doneTasks: TaskBrief[];
-  overdueTaskList: TaskBrief[];
+  newTasks?: TaskBrief[];
+  doneTasks?: TaskBrief[];
+  overdueTaskList?: TaskBrief[];
   noticeReadRate: number;
   totalNotices: number;
   readNotices: number;
