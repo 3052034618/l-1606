@@ -10,8 +10,8 @@ interface CalendarState {
   getEvents: () => CalendarEvent[];
   getMonthEvents: (year: number, month: number) => CalendarEvent[];
   getUpcomingEvents: (days?: number) => CalendarEvent[];
-  addEvent: (form: CreateCalendarEventForm) => void;
-  removeEvent: (eventId: string) => void;
+  addEvent: (form: CreateCalendarEventForm) => { success: boolean; event?: CalendarEvent };
+  removeEvent: (eventId: string) => { success: boolean };
   checkReminders: () => void;
 }
 
@@ -60,6 +60,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     }));
 
     console.log('[Calendar] 事件添加成功', { eventId: newEvent.id, title: newEvent.title });
+    return { success: true, event: newEvent };
   },
 
   removeEvent: (eventId) => {
@@ -67,6 +68,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
       events: state.events.filter((e) => e.id !== eventId),
     }));
     console.log('[Calendar] 事件删除', { eventId });
+    return { success: true };
   },
 
   checkReminders: () => {

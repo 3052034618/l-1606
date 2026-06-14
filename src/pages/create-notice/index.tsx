@@ -15,7 +15,7 @@ const CreateNoticePage: React.FC = () => {
   const [form, setForm] = useState({
     title: '',
     content: '',
-    expireDays: '7',
+    autoExpireHours: '24',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -45,7 +45,11 @@ const CreateNoticePage: React.FC = () => {
   const handleSubmit = () => {
     console.log('[CreateNotice] 提交表单:', form);
 
-    const validation = validateNoticeForm(form);
+    const validation = validateNoticeForm({
+      title: form.title,
+      content: form.content,
+      autoExpireHours: parseInt(form.autoExpireHours) || 24,
+    });
     if (!validation.success) {
       console.log('[CreateNotice] 校验失败:', validation.errors);
       setErrors(validation.errors || {});
@@ -59,7 +63,7 @@ const CreateNoticePage: React.FC = () => {
     const result = createNotice({
       title: form.title,
       content: form.content,
-      expireDays: parseInt(form.expireDays) || 7,
+      autoExpireHours: parseInt(form.autoExpireHours) || 24,
     });
 
     if (result.success) {
@@ -131,9 +135,9 @@ const CreateNoticePage: React.FC = () => {
               <Button
                 key={opt.value.toString()}
                 className={classNames(styles.optionBtn, {
-                  [styles.active]: form.expireDays === opt.value.toString(),
+                  [styles.active]: form.autoExpireHours === opt.value.toString(),
                 })}
-                onClick={() => handleInputChange('expireDays', opt.value.toString())}
+                onClick={() => handleInputChange('autoExpireHours', opt.value.toString())}
               >
                 {opt.label}
               </Button>
@@ -142,8 +146,8 @@ const CreateNoticePage: React.FC = () => {
           <Text className={styles.tip}>
             到期后公告将自动隐藏，不再显示在列表中
           </Text>
-          {errors.expireDays && (
-            <Text className={styles.errorText}>{errors.expireDays}</Text>
+          {errors.autoExpireHours && (
+            <Text className={styles.errorText}>{errors.autoExpireHours}</Text>
           )}
         </View>
       </View>

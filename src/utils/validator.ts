@@ -108,8 +108,10 @@ export interface FormValidationResult {
 
 export const validateTaskForm = (form: {
   title: string;
+  description: string;
   deadline: string;
   repeatCycle: string;
+  assigneeId?: string;
 }): FormValidationResult => {
   const errors: Record<string, string> = {};
 
@@ -138,7 +140,7 @@ export const validateTaskForm = (form: {
 export const validateNoticeForm = (form: {
   title: string;
   content: string;
-  expireDays: number;
+  autoExpireHours: number;
 }): FormValidationResult => {
   const errors: Record<string, string> = {};
 
@@ -152,9 +154,9 @@ export const validateNoticeForm = (form: {
     errors.content = contentResult.message || '';
   }
 
-  const expireResult = validateNoticeExpireHours(form.expireDays);
+  const expireResult = validateNoticeExpireHours(form.autoExpireHours);
   if (!expireResult.valid) {
-    errors.expireDays = expireResult.message || '';
+    errors.autoExpireHours = expireResult.message || '';
   }
 
   if (Object.keys(errors).length > 0) {

@@ -10,7 +10,8 @@ import { CALENDAR_EVENT_TYPE_OPTIONS } from '@/types/calendar';
 import EmptyState from '@/components/EmptyState';
 
 const CalendarPage: React.FC = () => {
-  const { getMonthEvents, getUpcomingEvents, addEvent, removeEvent } = useCalendarStore();
+  const events = useCalendarStore((state) => state.events);
+  const { addEvent, removeEvent } = useCalendarStore();
   const { currentUser, isCurrentUserAdmin } = useFamilyStore();
 
   const today = getTodayDate();
@@ -22,8 +23,20 @@ const CalendarPage: React.FC = () => {
     console.log('[Calendar] 页面显示');
   });
 
-  const monthEvents = getMonthEvents(currentYear, currentMonth);
-  const upcomingEvents = getUpcomingEvents(7);
+  const monthEvents = events.filter((event) => {
+    const eventDate = new Date(event.date);
+    return eventDate.getFullYear() === currentYear && eventDate.getMonth() === currentMonth;
+  });
+
+  const upcomingEvents = (() => {
+    const future = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    return events
+      .filter((event) => {
+        const eventDate = new Date(event.date);
+        return eventDate >= today && eventDate <= future;
+      })
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  })();
 
   const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
@@ -120,7 +133,7 @@ const CalendarPage: React.FC = () => {
                 type: type.value,
                 date: selectedDate,
                 description: '',
-                remindDays: 1,
+                reminderDays: 1,
               });
               if (result.success) {
                 Taro.showToast({ title: '添加成功', icon: 'success' });
@@ -289,8 +302,8 @@ const CalendarPage: React.FC = () => {
                         <Text className={styles.eventTypeTag}>
                           {getEventTypeLabel(event.type)}
                         </Text>
-                        {event.remindDays > 0 && (
-                          <Text>提前{event.remindDays}天提醒</Text>
+                        {event.reminderDays > 0 && (
+                          <Text>提前{event.reminderDays}天提醒</Text>
                         )}
                       </View>
                     </View>

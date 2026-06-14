@@ -19,7 +19,7 @@ const CreateTaskPage: React.FC = () => {
     deadline: formatDate(getTodayDate()),
     repeatCycle: 'none',
     points: '10',
-    assigneeIds: [] as string[],
+    assigneeId: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -47,20 +47,10 @@ const CreateTaskPage: React.FC = () => {
   };
 
   const handleToggleAssignee = (memberId: string) => {
-    setForm((prev) => {
-      const ids = prev.assigneeIds.includes(memberId)
-        ? prev.assigneeIds.filter((id) => id !== memberId)
-        : [...prev.assigneeIds, memberId];
-      return { ...prev, assigneeIds: ids };
-    });
-  };
-
-  const handleSelectAll = () => {
-    if (form.assigneeIds.length === family.members.length) {
-      setForm((prev) => ({ ...prev, assigneeIds: [] }));
-    } else {
-      setForm((prev) => ({ ...prev, assigneeIds: family.members.map((m) => m.id) }));
-    }
+    setForm((prev) => ({
+      ...prev,
+      assigneeId: prev.assigneeId === memberId ? '' : memberId,
+    }));
   };
 
   const handleSubmit = () => {
@@ -82,8 +72,7 @@ const CreateTaskPage: React.FC = () => {
       description: form.description,
       deadline: form.deadline,
       repeatCycle: form.repeatCycle as any,
-      points: parseInt(form.points) || 10,
-      assigneeIds: form.assigneeIds,
+      assigneeId: form.assigneeId || undefined,
     });
 
     if (result.success) {
@@ -192,25 +181,16 @@ const CreateTaskPage: React.FC = () => {
         </View>
 
         <View className={styles.formGroup}>
-          <View style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24rpx' }}>
-            <Text className={styles.label} style={{ marginBottom: 0 }}>指定执行人</Text>
-            <Button
-              className={styles.optionBtn}
-              onClick={handleSelectAll}
-              style={{ padding: '8rpx 24rpx', fontSize: '24rpx' }}
-            >
-              {form.assigneeIds.length === family.members.length ? '取消全选' : '全选'}
-            </Button>
-          </View>
+          <Text className={styles.label}>指定执行人</Text>
           <Text style={{ fontSize: '24rpx', color: '#86909C', marginBottom: '24rpx', display: 'block' }}>
-            不选择则任务开放认领
+            选择成员则直接分配，不选择则任务开放认领
           </Text>
           <View className={styles.memberList}>
             {family.members.map((member) => (
               <View
                 key={member.id}
                 className={classNames(styles.memberOption, {
-                  [styles.active]: form.assigneeIds.includes(member.id),
+                  [styles.active]: form.assigneeId === member.id,
                 })}
                 onClick={() => handleToggleAssignee(member.id)}
               >

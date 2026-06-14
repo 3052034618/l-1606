@@ -148,7 +148,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
           if (!t.isOverdueNotified) {
             console.log('[Task] 任务逾期，通知管理员', { taskId: t.id, title: t.title });
           }
-          return { ...t, status: 'overdue', isOverdueNotified: true };
+          return { ...t, status: 'overdue' as const, isOverdueNotified: true };
         }
         return t;
       });
